@@ -3,7 +3,7 @@ import { pink, purple } from "@mui/material/colors";
 
 const theme = createTheme({
   palette: {
-    type: "dark",
+    mode: "dark",
     primary: pink,
     secondary: purple,
   },
