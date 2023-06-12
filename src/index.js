@@ -8,7 +8,7 @@ import theme from "./components/theme";
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <ThemeProvider theme={theme}>
-    <CssBaseline enableColorScheme />
+    <CssBaseline />
     <App />
   </ThemeProvider>
 );
