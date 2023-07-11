@@ -1,23 +1,25 @@
 import React from "react";
 import { Typography, Avatar, IconButton, useMediaQuery } from "@mui/material";
 import { Delete } from "@mui/icons-material";
+import { useMutation } from "@apollo/react-hooks";
+import { ADD_OR_REMOVE_FROM_QUEUE } from "../graphql/mutations";
 
-function QueuedSongList() {
+function QueuedSongList({ queue }) {
   const greaterThanMd = useMediaQuery((theme) => theme.breakpoints.up("md"));
 
-  const song = {
-    title: "Queen",
-    artist: "Under Pressure",
-    thumbnail: "https://i3.ytimg.com/vi/a01QQZyl-_I/hqdefault.jpg",
-  };
+  // const song = {
+  //   title: "LÜNE",
+  //   artist: "MÖÖN",
+  //   thumbnail: "http://img.youtube.com/vi/--ZtUFsIgMk/0.jpg"
+  // };
 
   return (
     greaterThanMd && (
       <div style={{ margin: "10px 0" }}>
         <Typography color="textSecondary" variant="button">
-          QUEUE (5)
+          QUEUE ({queue.length})
         </Typography>
-        {Array.from({ length: 5 }, () => song).map((song) => (
+        {queue.map((song) => (
           <QueuedSong key={song.id} song={song} />
         ))}
       </div>
@@ -26,7 +28,18 @@ function QueuedSongList() {
 }
 
 function QueuedSong({ song }) {
+  const [addOrRemoveFromQueue] = useMutation(ADD_OR_REMOVE_FROM_QUEUE, {
+    onCompleted: (data) => {
+      localStorage.setItem("queue", JSON.stringify(data.addOrRemoveFromQueue));
+    },
+  });
   const { thumbnail, artist, title } = song;
+
+  function handleAddOrRemoveFromQueue() {
+    addOrRemoveFromQueue({
+      variables: { input: { ...song, __typename: "Song" } },
+    });
+  }
 
   return (
     <div
@@ -47,19 +60,19 @@ function QueuedSong({ song }) {
       <div style={{ overflow: "hidden", whiteSpace: "nowrap" }}>
         <Typography
           variant="subtitle2"
-          style={{ textOverflow: "ellipsis", overflow: "hidden" }}
+          style={{ overflow: "hidden", textOverflow: "ellipsis" }}
         >
           {title}
         </Typography>
         <Typography
           color="textSecondary"
           variant="body2"
-          style={{ textOverflow: "ellipsis", overflow: "hidden" }}
+          style={{ overflow: "hidden", textOverflow: "ellipsis" }}
         >
           {artist}
         </Typography>
       </div>
-      <IconButton>
+      <IconButton onClick={handleAddOrRemoveFromQueue}>
         <Delete color="error" />
       </IconButton>
     </div>
